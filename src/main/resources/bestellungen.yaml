@@ -1,0 +1,197 @@
+openapi: 3.0.4
+info:
+  title: Bestellservice-Microservice API
+  description: API des BestellServices
+  contact:
+    email: ch.fries@gmx.net
+  version: 0.0.1
+externalDocs:
+  description: Github-Repository
+  url: https://github.com/ChFries/bestellservice
+servers:
+  - url: localhost.something
+tags:
+  - name: bestellung
+    description: Bestellungen aufgeben, updaten und löschen
+paths:
+  /bestellung:
+    get:
+      tags:
+        - bestellung
+      summary: Alle Bestellungen abrufen
+      description: Ruft alle Bestellungen ab
+      operationId: getBestellung
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  format: int32
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      tags:
+        - bestellung
+      summary: Bestellung anlegen
+      description: Legt eine neue Bestellung an
+      operationId: postBestellung
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bestellung'
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bestellung'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /bestellung/{bestellId}:
+    get:
+      tags:
+        - bestellung
+      summary: Bestellung abrufen
+      description: Ruft eine Bestellung anhand der UUID ab
+      operationId: getBestellungById
+      parameters:
+        - name: bestellId
+          in: path
+          description: ID der bestellung
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bestellung'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Bestellung not found
+    delete:
+      tags:
+        - bestellung
+      summary: Bestellung löschen
+      description: Löscht die Bestellung anhand der UUID
+      operationId: deleteBestellungById
+      parameters:
+        - name: bestellId
+          in: path
+          description: ID der zu löschenden Bestellung
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: order deleted
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Order not found
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Bestellung:
+      type: object
+      required:
+        - kundeId
+        - bestellPositionen
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Eindeutige Bestell-ID
+          example: "1a2b3c4d-5678-90ab-cdef-1234567890ab"
+        kundeId:
+          type: string
+          format: uuid
+          description: ID des Kunden, der die Bestellung aufgegeben hat
+          example: "98765432-abcd-1234-ef00-112233445566"
+        bestellPositionen:
+          type: array
+          description: Liste der bestellten Positionen
+          items:
+            $ref: '#/components/schemas/BestellPosition'
+        status:
+          type: string
+          description: Aktueller Status der Bestellung
+          enum: [ offen, bezahlt, versendet, abgeschlossen, storniert ]
+          example: "offen"
+        erstelltAm:
+          type: string
+          format: date-time
+          description: Zeitstempel der Bestellerstellung
+          example: "2025-06-20T12:34:56Z"
+        zahlungsreferenz:
+          type: string
+          nullable: true
+          description: Referenz zur Zahlung, falls vorhanden
+          example: "PAY-2025-123456"
+        versandreferenz:
+          type: string
+          nullable: true
+          description: Referenz zum Versand, falls vorhanden
+          example: "SHIP-XYZ-789456"
+    BestellPosition:
+      type: object
+      required:
+        - produktId
+        - menge
+        - einzelpreis
+      properties:
+        produktId:
+          type: string
+          format: uuid
+          description: Produkt-ID der bestellten Ware
+          example: "abc12345-def6-7890-ghij-klmnopqrstuv"
+        menge:
+          type: integer
+          format: int32
+          minimum: 1
+          description: Anzahl der bestellten Einheiten
+          example: 2
+        einzelpreis:
+          type: number
+          format: float
+          description: Preis pro Einheit in Euro zum Bestellzeitpunkt
+          example: 74.99
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+
