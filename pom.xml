@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>prv.fries</groupId>
 	<artifactId>bestellservice</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>bestellservice</name>
 	<description>Bestellservice</description>
 	<url/>
