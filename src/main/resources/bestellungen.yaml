@@ -29,13 +29,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Bestellung"
+                  $ref: "#/components/schemas/BestellungDto"
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorDto"
     post:
       tags:
         - bestellung
@@ -46,14 +46,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Bestellung'
+              $ref: '#/components/schemas/BestellungDto'
       responses:
         '201':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Bestellung'
+                $ref: '#/components/schemas/BestellungDto'
         '400':
           description: Invalid input
         '422':
@@ -63,7 +63,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorDto"
   /bestellung/{bestellId}:
     get:
       tags:
@@ -85,7 +85,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Bestellung'
+                $ref: '#/components/schemas/BestellungDto'
         '400':
           description: Invalid ID supplied
         '404':
@@ -116,7 +116,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorDto"
   /bestellung/{bestellId}/status:
     put:
       tags:
@@ -136,14 +136,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StatusUpdate'
+              $ref: '#/components/schemas/StatusUpdateDto'
       responses:
         '200':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Bestellung'
+                $ref: '#/components/schemas/BestellungDto'
         '400':
           description: Invalid ID supplied
         '404':
@@ -151,7 +151,7 @@ paths:
 
 components:
   schemas:
-    Bestellung:
+    BestellungDto:
       type: object
       required:
         - kundeId
@@ -171,9 +171,9 @@ components:
           type: array
           description: Liste der bestellten Positionen
           items:
-            $ref: '#/components/schemas/BestellPosition'
+            $ref: '#/components/schemas/BestellPositionDto'
         status:
-          $ref: '#/components/schemas/Status'
+          $ref: '#/components/schemas/StatusDto'
         erstelltAm:
           type: string
           format: date-time
@@ -181,15 +181,13 @@ components:
           example: "2025-06-20T12:34:56Z"
         zahlungsreferenz:
           type: string
-          nullable: true
           description: Referenz zur Zahlung, falls vorhanden
           example: "PAY-2025-123456"
         versandreferenz:
           type: string
-          nullable: true
           description: Referenz zum Versand, falls vorhanden
           example: "SHIP-XYZ-789456"
-    BestellPosition:
+    BestellPositionDto:
       type: object
       required:
         - produktId
@@ -212,25 +210,25 @@ components:
           format: float
           description: Preis pro Einheit in Euro zum Bestellzeitpunkt
           example: 74.99
-    Status:
+    StatusDto:
       type: string
       description: Aktueller Status der Bestellung
       enum: [ offen, bezahlt, versendet, abgeschlossen, storniert ]
       example: "offen"
-    StatusUpdate:
+    StatusUpdateDto:
       type: object
       required:
         - status
         - id
       properties:
         status:
-          $ref: "#/components/schemas/Status"
+          $ref: "#/components/schemas/StatusDto"
         id:
           type: string
           format: uuid
           description: Eindeutige Bestell-ID
           example: "1a2b3c4d-5678-90ab-cdef-1234567890ab"
-    Error:
+    ErrorDto:
       type: object
       properties:
         code:
