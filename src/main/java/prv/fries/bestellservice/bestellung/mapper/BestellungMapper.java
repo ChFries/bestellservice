@@ -1,6 +1,7 @@
 package prv.fries.bestellservice.bestellung.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ValueMapping;
 import prv.fries.bestellservice.bestellung.entity.Bestellung;
 import prv.fries.bestellservice.bestellung.model.Status;
@@ -11,6 +12,8 @@ import prv.fries.bestellservice.generated.StatusDto;
 public interface BestellungMapper {
 
     BestellungDto toDTO(Bestellung bestellung);
+
+    @Mapping(target="id", ignore = true)
     Bestellung toEntity(BestellungDto bestellung);
 
     @ValueMapping(source="OFFEN", target="OFFEN")

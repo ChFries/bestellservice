@@ -6,6 +6,7 @@ import org.openapitools.api.BestellungApi;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import prv.fries.bestellservice.bestellung.mapper.BestellungMapper;
 import prv.fries.bestellservice.bestellung.service.BestellService;
 import prv.fries.bestellservice.generated.BestellungDto;
 import prv.fries.bestellservice.generated.StatusUpdateDto;
@@ -19,9 +20,11 @@ import java.util.UUID;
 public class BestellungenController implements BestellungApi {
 
     private final BestellService bestellService;
+    private final BestellungMapper bestellungMapper;
     @Override
     public ResponseEntity<Void> deleteBestellungById(UUID bestellId) {
-        return null;
+        bestellService.deleteBestellungById(bestellId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Override
@@ -32,7 +35,8 @@ public class BestellungenController implements BestellungApi {
 
     @Override
     public ResponseEntity<BestellungDto> getBestellungById(UUID bestellId) {
-        return null;
+        var bestellung = bestellService.getBestellungById(bestellId);
+        return ResponseEntity.ok().body(bestellungMapper.toDTO(bestellung));
     }
 
     @Override
@@ -43,6 +47,7 @@ public class BestellungenController implements BestellungApi {
 
     @Override
     public ResponseEntity<BestellungDto> updateZahlungsstatusById(UUID bestellId, StatusUpdateDto statusUpdate) {
-        return null;
+        BestellungDto bestellungDto = bestellService.updateBestellung(bestellId, statusUpdate);
+        return ResponseEntity.status(HttpStatus.OK).body(bestellungDto);
     }
 }
