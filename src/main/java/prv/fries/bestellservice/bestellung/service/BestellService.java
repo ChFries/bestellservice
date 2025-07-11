@@ -10,6 +10,7 @@ import prv.fries.bestellservice.bestellung.repository.BestellungRepository;
 import prv.fries.bestellservice.generated.BestellungDto;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +29,11 @@ public class BestellService {
         }
         bestellung = bestellungRepository.save(bestellung);
         return bestellungMapper.toDTO(bestellung);
+    }
+
+    public List<BestellungDto> getAllBestellungen() {
+        return bestellungRepository.findAll().stream().map(bestellungMapper::toDTO).toList();
+
     }
 
 }

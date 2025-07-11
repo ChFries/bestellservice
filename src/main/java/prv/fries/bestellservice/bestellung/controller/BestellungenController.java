@@ -26,8 +26,8 @@ public class BestellungenController implements BestellungApi {
 
     @Override
     public ResponseEntity<List<BestellungDto>> getBestellung() {
-        log.info("getBestellung");
-        return ResponseEntity.ok().build();
+        var bestellungen = bestellService.getAllBestellungen();
+        return ResponseEntity.ok().body(bestellungen);
     }
 
     @Override
