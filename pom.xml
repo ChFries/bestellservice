@@ -141,13 +141,13 @@
                 <version>7.14.0</version>
                 <executions>
                     <execution>
+                        <id>server</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/bestellungen.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/contract/server/bestellungen.yaml</inputSpec>
                             <generatorName>spring</generatorName>
-
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>
                                 <modelPackage>prv.fries.bestellservice.generated</modelPackage>
@@ -156,6 +156,25 @@
                                 <useJakartaEe>true</useJakartaEe>
                                 <useSpringBoot3>true</useSpringBoot3>
                                 <skipDefaultInterface>true</skipDefaultInterface>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>payment-client</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/contract/client/payment.yaml</inputSpec>
+                            <generatorName>java</generatorName>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <configOptions>
+                                <modelPackage>prv.fries.bestellservice.generated.client.payment</modelPackage>
+                                <library>resttemplate</library>
+                                <useTags>true</useTags>
+                                <useJakartaEe>true</useJakartaEe>
+                                <useSpringBoot3>true</useSpringBoot3>
                             </configOptions>
                         </configuration>
                     </execution>

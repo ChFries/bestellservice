@@ -1,0 +1,147 @@
+openapi: 3.0.4
+info:
+  title: Zahlung API
+  version: 0.0.1
+externalDocs:
+  description: Github-Repository
+  url: https://github.com/ChFries/paymentservice
+servers:
+  - url: localhost.something
+tags:
+  - name: zahlung
+    description: Zahlungen aufgeben und Zahltungsstatus abfragen
+paths:
+  /zahlung:
+    get:
+      tags:
+        - zahlung
+      summary: Alle Zahlungen abrufen
+      description: Ruft alle Zahlungen ab
+      operationId: getZahlung
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ZahlungDto"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+    post:
+      tags:
+        - zahlung
+      summary: Zahlungsvorgang anlegen
+      description: Legt einen neue Zahlungsvorgang an
+      operationId: postZahlung
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ZahlungDto'
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ZahlungDto'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+  /zahlung/{zahlungId}:
+    get:
+      tags:
+        - zahlung
+      summary: Zahlung abrufen
+      description: Ruft eine Zahlung anhand der UUID ab
+      operationId: getZahlungById
+      parameters:
+        - name: zahlungId
+          in: path
+          description: ID der bestellung
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ZahlungDto'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Zahlung not found
+components:
+  schemas:
+    ZahlungDto:
+      type: object
+      required:
+        - bestellungId
+        - zahlungsart
+        - betrag
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Eindeutige Zahlungs-ID
+          example: "a1b2c3d4-5678-90ab-cdef-1234567890ab"
+        bestellungId:
+          type: string
+          format: uuid
+          description: ID der zugehörigen Bestellung
+          example: "1a2b3c4d-5678-90ab-cdef-1234567890ab"
+        zahlungsart:
+          type: string
+          description: Verwendete Zahlungsart
+          enum: [kreditkarte, paypal, vorkasse, rechnung]
+          example: "paypal"
+        betrag:
+          type: number
+          format: float
+          description: Gesamtbetrag der Zahlung in Euro
+          example: 149.99
+        status:
+          type: string
+          description: Status der Zahlung
+          enum: [offen, erfolgreich, fehlgeschlagen, storniert]
+          example: "erfolgreich"
+        zahlungszeitpunkt:
+          type: string
+          format: date-time
+          description: Zeitpunkt der Zahlungstransaktion
+          example: "2025-06-20T14:25:00Z"
+        referenz:
+          type: string
+          description: Externe Zahlungsreferenz oder Transaktions-ID
+          example: "PAYPAL-TRX-123456789"
+        fehlercode:
+          type: string
+          description: Fehlercode bei fehlgeschlagener Zahlung (optional)
+          example: "ERR_TIMEOUT"
+    ErrorDto:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
