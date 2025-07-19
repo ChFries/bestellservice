@@ -1,0 +1,73 @@
+openapi: 3.0.4
+info:
+  title: Versand API
+  version: 0.0.1
+  description: API zum Erstellen von Versandaufträgen
+
+servers:
+  - url: http://localhost:8075
+    description: Lokale Entwicklungsumgebung
+
+paths:
+  /versand:
+    post:
+      summary: Versandauftrag anlegen
+      description: Legt einen neuen Versandauftrag basierend auf bestellungId und kundenId an.
+      tags:
+        - Versand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersandauftragRequest'
+      responses:
+        '200':
+          description: Erfolgreich angelegter Versandauftrag
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersandauftragDto'
+        '400':
+          description: Ungültige Anfrage
+        '500':
+          description: Interner Fehler
+
+components:
+  schemas:
+    VersandauftragRequest:
+      type: object
+      required:
+        - bestellungId
+        - kundenId
+      properties:
+        bestellungId:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        kundenId:
+          type: string
+          format: uuid
+          example: "321e4567-e89b-12d3-a456-426614174999"
+
+    VersandauftragDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        bestellungId:
+          type: string
+          format: uuid
+        kundenId:
+          type: string
+          format: uuid
+        sendungsnummer:
+          type: string
+          example: "TRX-abcdef123456"
+        status:
+          type: string
+          description: Aktueller Status der Bestellung
+          enum: [ erfasst, versendet ]
+          example: "offen"
