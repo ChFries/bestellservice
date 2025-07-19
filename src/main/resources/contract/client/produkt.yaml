@@ -1,0 +1,155 @@
+openapi: 3.0.4
+info:
+  title: Produkt API
+  version: 0.0.1
+  description: API zur Verwaltung und Abfrage von Produktinformationen
+
+servers:
+  - url: http://localhost:8076
+    description: Lokale Entwicklungsumgebung
+  - url: http://produktservice:8080
+    description: Containerumgebung
+
+tags:
+  - name: produkt
+    description: Produktverwaltung und Verfügbarkeitsprüfung
+
+paths:
+  /produkt/{id}:
+    get:
+      tags:
+        - produkt
+      summary: Produktdetails abrufen
+      description: Gibt die Details eines Produkts anhand der ID zurück
+      operationId: getProduktById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Produkt-ID
+      responses:
+        '200':
+          description: Produkt erfolgreich abgerufen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProduktDto'
+        '404':
+          description: Produkt nicht gefunden
+
+  /produkt:
+    get:
+      tags:
+        - produkt
+      summary: Alle Produkte abrufen
+      operationId: getAlleProdukte
+      responses:
+        '200':
+          description: Liste aller Produkte
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProduktDto'
+
+  /produkt/verfuegbar:
+    post:
+      tags:
+        - produkt
+      summary: Produktverfügbarkeit prüfen
+      description: Prüft, ob ein bestimmtes Produkt verfügbar ist
+      operationId: pruefeVerfuegbarkeit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProduktVerfuegbarkeitDto'
+      responses:
+        '200':
+          description: Verfügbarkeitsstatus
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProduktVerfuegbarDto'
+        '404':
+          description: Produkt nicht gefunden
+
+components:
+  schemas:
+    ProduktDto:
+      type: object
+      required:
+        - id
+        - name
+        - preis
+        - lagerbestand
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Eindeutige Produkt-ID
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        name:
+          type: string
+          description: Name des Produkts
+          example: "Bluetooth Kopfhörer"
+        beschreibung:
+          type: string
+          description: Produktbeschreibung
+          example: "Kabellose Over-Ear Kopfhörer mit aktiver Geräuschunterdrückung"
+        preis:
+          type: number
+          format: float
+          description: Preis in Euro
+          example: 79.99
+        lagerbestand:
+          type: integer
+          description: Anzahl verfügbarer Artikel im Lager
+          example: 42
+
+    ProduktVerfuegbarkeitDto:
+      type: object
+      required:
+        - produktId
+        - menge
+        - preis
+      properties:
+        produktId:
+          type: string
+          format: uuid
+          description: Produkt-ID
+          example: "123e4567-e89b-12d3-a456-123412341234"
+        menge:
+          type: number
+          format: integer
+          description: Gibt an, ob das Produkt verfügbar ist
+          example: 5
+        preis:
+          type: number
+          format: float
+          description: Preis des Produkts
+          example: 12.34
+    ProduktVerfuegbarDto:
+      type: object
+      required:
+        - produktId
+        - verfuegbar
+      properties:
+        produktId:
+          type: string
+          format: uuid
+          description: Produkt-ID
+          example: "123e4567-e89b-12d3-a456-123412341234"
+        verfuegbar:
+          type: boolean
+          description: Zeigt Verfuegbarkeit für Produkt an
+          example: true

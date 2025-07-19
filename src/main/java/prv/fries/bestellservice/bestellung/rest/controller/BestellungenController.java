@@ -42,7 +42,7 @@ public class BestellungenController implements BestellungApi {
 
     @Override
     public ResponseEntity<BestellungDto> postBestellung(BestellungDto bestellungDto) {
-        Bestellung bestellung = bestellService.createBestellung(bestellungMapper.toEntity(bestellungDto));
+        Bestellung bestellung = bestellService.createBestellung(bestellungDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(bestellungMapper.toDTO(bestellung));
     }
 

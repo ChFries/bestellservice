@@ -4,8 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import prv.fries.bestellservice.bestellung.entity.BestellPosition;
 import prv.fries.bestellservice.bestellung.entity.Bestellung;
+import prv.fries.bestellservice.bestellung.mapper.BestellungMapper;
 import prv.fries.bestellservice.bestellung.model.Status;
 import prv.fries.bestellservice.bestellung.repository.BestellungRepository;
+import prv.fries.bestellservice.bestellung.rest.service.ProduktService;
+import prv.fries.bestellservice.generated.BestellungDto;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -17,7 +20,14 @@ public class BestellService {
 
     private final BestellungRepository bestellungRepository;
 
-    public Bestellung createBestellung(Bestellung bestellung) {
+
+    private final BestellungMapper bestellungMapper;
+
+    private final ProduktService produktService;
+
+    public Bestellung createBestellung(BestellungDto bestellungDto) {
+        produktService.pruefeVerfuerbarkeit(bestellungDto);
+        Bestellung bestellung = bestellungMapper.toEntity(bestellungDto);
         bestellung.setStatus(Status.OFFEN);
         bestellung.setErstelltAm(OffsetDateTime.now());
         for (BestellPosition pos : bestellung.getBestellPositionen()) {
@@ -43,4 +53,6 @@ public class BestellService {
         bestellung.setStatus(statusUpdate);
         return bestellungRepository.save(bestellung);
     }
+
+
 }
