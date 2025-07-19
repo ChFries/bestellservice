@@ -1,4 +1,4 @@
-package prv.fries.bestellservice.bestellung.client.payment;
+package prv.fries.bestellservice.bestellung.rest.payment;
 
 import org.openapitools.client.api.ZahlungApi;
 import org.springframework.beans.factory.annotation.Qualifier;

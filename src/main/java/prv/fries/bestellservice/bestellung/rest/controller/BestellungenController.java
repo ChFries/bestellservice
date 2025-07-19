@@ -1,4 +1,4 @@
-package prv.fries.bestellservice.bestellung.controller;
+package prv.fries.bestellservice.bestellung.rest.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,6 +6,7 @@ import org.openapitools.api.BestellungApi;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import prv.fries.bestellservice.bestellung.entity.Bestellung;
 import prv.fries.bestellservice.bestellung.mapper.BestellungMapper;
 import prv.fries.bestellservice.bestellung.service.BestellService;
 import prv.fries.bestellservice.generated.BestellungDto;
@@ -29,7 +30,7 @@ public class BestellungenController implements BestellungApi {
 
     @Override
     public ResponseEntity<List<BestellungDto>> getBestellung() {
-        var bestellungen = bestellService.getAllBestellungen();
+        var bestellungen = bestellService.getAllBestellungen().stream().map(bestellungMapper::toDTO).toList();
         return ResponseEntity.ok().body(bestellungen);
     }
 
@@ -40,14 +41,14 @@ public class BestellungenController implements BestellungApi {
     }
 
     @Override
-    public ResponseEntity<BestellungDto> postBestellung(BestellungDto bestellung) {
-        BestellungDto bestellungDto = bestellService.createBestellung(bestellung);
-        return ResponseEntity.status(HttpStatus.CREATED).body(bestellungDto);
+    public ResponseEntity<BestellungDto> postBestellung(BestellungDto bestellungDto) {
+        Bestellung bestellung = bestellService.createBestellung(bestellungMapper.toEntity(bestellungDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(bestellungMapper.toDTO(bestellung));
     }
 
     @Override
     public ResponseEntity<BestellungDto> updateZahlungsstatusById(UUID bestellId, StatusUpdateDto statusUpdate) {
-        BestellungDto bestellungDto = bestellService.updateBestellung(bestellId, statusUpdate);
-        return ResponseEntity.status(HttpStatus.OK).body(bestellungDto);
+        Bestellung bestellung = bestellService.updateBestellung(bestellId, bestellungMapper.toStatus(statusUpdate.getStatus()));
+        return ResponseEntity.status(HttpStatus.OK).body(bestellungMapper.toDTO(bestellung));
     }
 }
