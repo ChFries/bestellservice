@@ -180,6 +180,11 @@ components:
           format: date-time
           description: Zeitstempel der Bestellerstellung
           example: "2025-06-20T12:34:56Z"
+        geaendertAm:
+          type: string
+          format: date-time
+          description: Zeitstempel der letzten Aenderung
+          example: "2025-06-20T12:34:56Z"
         zahlungsreferenz:
           type: string
           description: Referenz zur Zahlung, falls vorhanden

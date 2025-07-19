@@ -11,9 +11,12 @@ import prv.fries.bestellservice.generated.StatusDto;
 @Mapper(componentModel = "spring")
 public interface BestellungMapper {
 
+    @Mapping(target="geaendertAm", source="lastUpdateAm")
     BestellungDto toDTO(Bestellung bestellung);
 
     @Mapping(target="id", ignore = true)
+    @Mapping(target="gesamtbetrag", ignore = true)
+    @Mapping(target="lastUpdateAm", ignore = true)
     Bestellung toEntity(BestellungDto bestellung);
 
     @ValueMapping(source="OFFEN", target="OFFEN")

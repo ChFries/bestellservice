@@ -32,6 +32,12 @@ public class Bestellung {
     @Column(nullable = false)
     private OffsetDateTime erstelltAm;
 
+    @Column(nullable = false)
+    private OffsetDateTime lastUpdateAm;
+
+    @Column
+    private Double gesamtbetrag;
+
     private String zahlungsreferenz;
 
     private String versandreferenz;

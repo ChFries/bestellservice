@@ -95,7 +95,6 @@ components:
         - bestellungId
         - zahlungsart
         - betrag
-        - status
       properties:
         id:
           type: string
@@ -122,19 +121,6 @@ components:
           description: Status der Zahlung
           enum: [offen, erfolgreich, fehlgeschlagen, storniert]
           example: "erfolgreich"
-        zahlungszeitpunkt:
-          type: string
-          format: date-time
-          description: Zeitpunkt der Zahlungstransaktion
-          example: "2025-06-20T14:25:00Z"
-        referenz:
-          type: string
-          description: Externe Zahlungsreferenz oder Transaktions-ID
-          example: "PAYPAL-TRX-123456789"
-        fehlercode:
-          type: string
-          description: Fehlercode bei fehlgeschlagener Zahlung (optional)
-          example: "ERR_TIMEOUT"
     ErrorDto:
       type: object
       properties:
