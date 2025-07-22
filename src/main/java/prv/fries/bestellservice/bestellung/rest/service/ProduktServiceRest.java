@@ -6,17 +6,19 @@ import org.openapitools.client.api.ProduktApi;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import prv.fries.bestellservice.bestellung.mapper.ProduktMapper;
+import prv.fries.bestellservice.bestellung.service.ProduktService;
 import prv.fries.bestellservice.generated.BestellungDto;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ProduktService {
+public class ProduktServiceRest implements ProduktService {
 
     private final ProduktMapper produktMapper;
 
     private final ProduktApi produktClient;
 
+    @Override
     public void pruefeVerfuerbarkeit(BestellungDto bestellungDto) {
         var produkte = bestellungDto.getBestellPositionen().stream().map(produktMapper::fromBestellposition).toList();
         try {

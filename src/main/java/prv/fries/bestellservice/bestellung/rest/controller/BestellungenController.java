@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import prv.fries.bestellservice.bestellung.entity.Bestellung;
 import prv.fries.bestellservice.bestellung.mapper.BestellungMapper;
-import prv.fries.bestellservice.bestellung.rest.service.BestellService;
+import prv.fries.bestellservice.bestellung.rest.service.BestellServiceRest;
 import prv.fries.bestellservice.generated.BestellungDto;
 import prv.fries.bestellservice.generated.StatusUpdateDto;
 
@@ -20,7 +20,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class BestellungenController implements BestellungApi {
 
-    private final BestellService bestellService;
+    private final BestellServiceRest bestellService;
     private final BestellungMapper bestellungMapper;
     @Override
     public ResponseEntity<Void> deleteBestellungById(UUID bestellId) {
@@ -42,7 +42,7 @@ public class BestellungenController implements BestellungApi {
 
     @Override
     public ResponseEntity<BestellungDto> postBestellung(BestellungDto bestellungDto) {
-        Bestellung bestellung = bestellService.createBestellung(bestellungDto);
+        Bestellung bestellung = bestellService.erstelleBestellung(bestellungDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(bestellungMapper.toDTO(bestellung));
     }
 

@@ -8,8 +8,13 @@ import prv.fries.bestellservice.bestellung.entity.Bestellung;
 import prv.fries.bestellservice.bestellung.mapper.BestellungMapper;
 import prv.fries.bestellservice.bestellung.model.Status;
 import prv.fries.bestellservice.bestellung.repository.BestellungRepository;
+import prv.fries.bestellservice.bestellung.service.BestellService;
 import prv.fries.bestellservice.bestellung.service.PaymentService;
+import prv.fries.bestellservice.bestellung.service.ProduktService;
+import prv.fries.bestellservice.bestellung.service.VersandService;
 import prv.fries.bestellservice.generated.BestellungDto;
+import prv.fries.bestellservice.generated.client.payment.ZahlungDto;
+import prv.fries.bestellservice.generated.client.versand.VersandauftragDto;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -18,7 +23,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class BestellService {
+public class BestellServiceRest implements BestellService {
 
     private final BestellungRepository bestellungRepository;
 
@@ -31,7 +36,8 @@ public class BestellService {
 
     private final VersandService versandService;
 
-    public Bestellung createBestellung(BestellungDto bestellungDto) {
+    @Override
+    public Bestellung erstelleBestellung(BestellungDto bestellungDto) {
         produktService.pruefeVerfuerbarkeit(bestellungDto);
         Bestellung bestellung = bestellungMapper.toEntity(bestellungDto);
         bestellung.setStatus(Status.OFFEN);
@@ -44,13 +50,45 @@ public class BestellService {
         }
         bestellung = bestellungRepository.save(bestellung);
         log.info("Bestellung with verfuegbaren Produkten created");
-
-        paymentServiceRest.erstelleZahlung(bestellung);
-        bestellung = bestellungRepository.save(bestellung);
-
-        versandService.erstelleZahlung(bestellung);
-        return bestellungRepository.save(bestellung);
+        createZahlung(bestellung);
+        erstelleVersandauftrag(bestellung);
+        return bestellungRepository.findById(bestellung.getId()).orElseThrow(() -> new IllegalStateException("Bestellung nicht gefunden"));
     }
+
+    public void createZahlung(Bestellung bestellung) {
+        var response = paymentServiceRest.erstelleZahlung(bestellung);
+        updateZahlungsStatus(response);
+    }
+
+    @Override
+    public void updateZahlungsStatus(ZahlungDto response) {
+        if (response.getStatus() == ZahlungDto.StatusEnum.ERFOLGREICH) {
+            Bestellung bestellung = bestellungRepository.findById(response.getBestellungId()).orElseThrow(() -> new IllegalStateException("BestellId nicht im ZahlungDto gefunden aber sollte da sein"));
+            log.info("Betrag {} wurde für Rechnung {} beglichen", response.getBetrag(), response.getBestellungId());
+            bestellung.setStatus(Status.BEZAHLT);
+            bestellung.setLastUpdateAm(OffsetDateTime.now());
+            bestellungRepository.save(bestellung);
+        } else {
+            throw new IllegalStateException("Zahlung nicht erfolgreich");
+        }
+    }
+
+    private void erstelleVersandauftrag(Bestellung bestellung) {
+        var response = versandService.erstelleVersandauftragRequest(bestellung);
+        updateVersandStatus(response);
+    }
+
+    @Override
+    public void updateVersandStatus(VersandauftragDto versandauftragAbgeschlossen){
+        if (versandauftragAbgeschlossen.getStatus() == VersandauftragDto.StatusEnum.VERSENDET) {
+            Bestellung bestellung = bestellungRepository.findById(versandauftragAbgeschlossen.getBestellungId()).orElseThrow(() -> new IllegalStateException("BestellId nicht im VersandAuftragDto gefunden aber sollte da sein"));
+            bestellung.setStatus(Status.VERSENDET);
+            bestellung.setLastUpdateAm(OffsetDateTime.now());
+            log.info("Sendung mit Id {} wurde für Bestellung {} versendet", versandauftragAbgeschlossen.getId(), versandauftragAbgeschlossen.getBestellungId());
+            bestellungRepository.save(bestellung);
+        }
+    }
+
 
     public List<Bestellung> getAllBestellungen() {
         return bestellungRepository.findAll();
