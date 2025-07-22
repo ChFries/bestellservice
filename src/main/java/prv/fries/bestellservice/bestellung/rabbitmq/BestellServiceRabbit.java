@@ -36,7 +36,7 @@ public class BestellServiceRabbit implements BestellService {
             pos.setBestellung(bestellung);
         }
         bestellungRepository.save(bestellung);
-//        bestellungPublisher.publishBestellungAngelegt(bestellungDto);
+        bestellungPublisher.publishBestellungAngelegt(bestellungMapper.toDTO(bestellung));
         return bestellung;
     }
 

@@ -22,6 +22,7 @@ public class RabbitMQGeneralConfig {
 
     public static final String ROUTING_KEY_ZAHLUNG_ABGESCHLOSSEN = "bestellung.zahlung.abgeschlossen";
     public static final String ROUTING_KEY_VERSAND_ABGESCHLOSSEN = "bestellung.versand.abgeschlossen";
+    public static final String ROUTING_KEY_BESTELLUNG_EINGEHEND = "bestellung.bestellung.eingehend";
 
     public static final String ROUTING_KEY_BESTELLUNG_ANGELEGT = "bestellung.angelegt";
     public static final String ROUTING_KEY_BESTELLUNG_ABGESCHLOSSEN = "bestellung.abgeschlossen";
@@ -56,6 +57,13 @@ public class RabbitMQGeneralConfig {
     @Bean
     public Queue bestellungEingehendQueue() {
         return new Queue(QUEUE_BESTELLUNG_EINGEHEND, true);
+    }
+
+    @Bean
+    public Binding bindBestellungQueueToExchange(Queue bestellungEingehendQueue, TopicExchange bestellungExchange) {
+        return BindingBuilder.bind(bestellungEingehendQueue)
+                .to(bestellungExchange)
+                .with(ROUTING_KEY_BESTELLUNG_EINGEHEND);
     }
 
     @Bean
