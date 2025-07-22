@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum Status {
     OFFEN("offen"),
+    GEPRUEFT("geprueft"),
     BEZAHLT("bezahlt"),
     VERSENDET("versendet"),
     ABGESCHLOSSEN("abgeschlossen"),

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import prv.fries.bestellservice.bestellung.entity.BestellPosition;
 import prv.fries.bestellservice.bestellung.entity.Bestellung;
+import prv.fries.bestellservice.bestellung.exceptions.IllegalStateTransitionException;
 import prv.fries.bestellservice.bestellung.mapper.BestellungMapper;
 import prv.fries.bestellservice.bestellung.model.Status;
 import prv.fries.bestellservice.bestellung.repository.BestellungRepository;
@@ -53,6 +54,7 @@ public class BestellServiceRest implements BestellService {
         bestellungDto.setId(bestellung.getId());
         try {
             produktService.pruefeVerfuerbarkeit(bestellungDto);
+            updatePruefung(bestellung);
             createZahlung(bestellung);
             erstelleVersandauftrag(bestellung);
         }catch (IllegalStateException e) {
@@ -62,6 +64,16 @@ public class BestellServiceRest implements BestellService {
             bestellungRepository.save(bestellung);
         }
         return bestellungRepository.findById(bestellung.getId()).orElseThrow(() -> new IllegalStateException("Bestellung nicht gefunden"));
+    }
+
+    private void updatePruefung(Bestellung bestellung) {
+        try {
+            bestellung.setStatus(Status.GEPRUEFT);
+            bestellung.setLastUpdateAm(OffsetDateTime.now());
+            bestellungRepository.save(bestellung);
+        }catch(IllegalStateTransitionException e){
+            log.error("{} für Bestellung {}", e.getMessage(), bestellung.getId() );
+        }
     }
 
     public void createZahlung(Bestellung bestellung) {

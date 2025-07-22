@@ -24,6 +24,7 @@ public interface BestellungMapper {
     @ValueMapping(source="VERSENDET", target="VERSENDET")
     @ValueMapping(source="ABGESCHLOSSEN", target="ABGESCHLOSSEN")
     @ValueMapping(source="STORNIERT", target="STORNIERT")
+    @ValueMapping(source="GEPRUEFT", target="GEPRUEFT")
     Status toStatusDto(StatusDto statusDto);
 
     @ValueMapping(source="OFFEN", target="OFFEN")
@@ -31,6 +32,7 @@ public interface BestellungMapper {
     @ValueMapping(source="VERSENDET", target="VERSENDET")
     @ValueMapping(source="ABGESCHLOSSEN", target="ABGESCHLOSSEN")
     @ValueMapping(source="STORNIERT", target="STORNIERT")
+    @ValueMapping(source="GEPRUEFT", target="GEPRUEFT")
     StatusDto toStatusDto(Status status);
 
 

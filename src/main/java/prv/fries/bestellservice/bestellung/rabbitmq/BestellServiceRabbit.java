@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import prv.fries.bestellservice.bestellung.entity.BestellPosition;
 import prv.fries.bestellservice.bestellung.entity.Bestellung;
+import prv.fries.bestellservice.bestellung.exceptions.IllegalStateTransitionException;
 import prv.fries.bestellservice.bestellung.mapper.BestellungMapper;
 import prv.fries.bestellservice.bestellung.model.Status;
 import prv.fries.bestellservice.bestellung.repository.BestellungRepository;
@@ -64,6 +65,14 @@ public class BestellServiceRabbit implements BestellService {
             throw new IllegalStateException("Produkte nicht verfuegbar");
         }
         log.info("Pruefung abgeschlossen fuer Bestellung {}", produktVerfuegbarAbgeschlossen.getBestellId());
+        Bestellung bestellung = bestellungRepository.findById(produktVerfuegbarAbgeschlossen.getBestellId()).orElseThrow(() -> new IllegalStateException("Bestellung nicht gefunden"));
+        try {
+            bestellung.setStatus(Status.GEPRUEFT);
+            bestellung.setLastUpdateAm(OffsetDateTime.now());
+            bestellungRepository.save(bestellung);
+        }catch(IllegalStateTransitionException e){
+            log.error("{} für Bestellung {}", e.getMessage(), bestellung.getId() );
+        }
     }
 
     private Double calculateSums(Bestellung bestellung) {

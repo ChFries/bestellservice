@@ -219,7 +219,7 @@ components:
     StatusDto:
       type: string
       description: Aktueller Status der Bestellung
-      enum: [ offen, bezahlt, versendet, abgeschlossen, storniert ]
+      enum: [ offen, bezahlt, versendet, abgeschlossen, storniert, geprueft ]
       example: "offen"
     StatusUpdateDto:
       type: object
