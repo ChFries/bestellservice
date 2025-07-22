@@ -9,6 +9,7 @@ import prv.fries.bestellservice.bestellung.mapper.ProduktMapper;
 import prv.fries.bestellservice.bestellung.service.ProduktService;
 import prv.fries.bestellservice.generated.BestellungDto;
 import prv.fries.bestellservice.generated.client.produkt.ProduktVerfuegbarkeitDto;
+import prv.fries.bestellservice.generated.client.produkt.UeberprueftePositionen;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,11 @@ public class ProduktServiceRest implements ProduktService {
         produktVerfuegbarkeitsDto.setBestellId(bestellungDto.getId());
         produktVerfuegbarkeitsDto.setPositionen(positionen);
         try {
-            produktClient.pruefeVerfuegbarkeit(produktVerfuegbarkeitsDto);
+            var ueberpruefteProdukte = produktClient.pruefeVerfuegbarkeit(produktVerfuegbarkeitsDto);
+            if (!ueberpruefteProdukte.getPositionen().stream().allMatch(UeberprueftePositionen::getVerfuegbar)) {
+                throw new IllegalStateException("Produkte nicht verfuegbar");
+            }
+            log.info("Pruefung abgeschlossen fuer Bestellung {}", ueberpruefteProdukte.getBestellId());
         } catch (RestClientException e) {
             throw new IllegalStateException("Fehler beim Abruf des Produktservices");
         }

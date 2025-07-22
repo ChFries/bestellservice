@@ -12,6 +12,8 @@ import prv.fries.bestellservice.bestellung.service.BestellService;
 import prv.fries.bestellservice.bestellung.service.ProduktService;
 import prv.fries.bestellservice.generated.BestellungDto;
 import prv.fries.bestellservice.generated.client.payment.ZahlungDto;
+import prv.fries.bestellservice.generated.client.produkt.ProduktVerfuegbarDto;
+import prv.fries.bestellservice.generated.client.produkt.UeberprueftePositionen;
 import prv.fries.bestellservice.generated.client.versand.VersandauftragDto;
 
 import java.time.OffsetDateTime;
@@ -37,6 +39,7 @@ public class BestellServiceRabbit implements BestellService {
             pos.setBestellung(bestellung);
         }
         bestellungRepository.save(bestellung);
+        bestellungDto.setId(bestellung.getId());
         produktService.pruefeVerfuerbarkeit(bestellungDto);
         return bestellung;
     }
@@ -49,6 +52,18 @@ public class BestellServiceRabbit implements BestellService {
     @Override
     public void updateVersandStatus(VersandauftragDto versandauftragAbgeschlossen) {
         //todo
+    }
+
+    @Override
+    public void updatePruefungAbgeschlossen(ProduktVerfuegbarDto produktVerfuegbarAbgeschlossen) {
+        if (!produktVerfuegbarAbgeschlossen.getPositionen().stream().allMatch(UeberprueftePositionen::getVerfuegbar)) {
+            Bestellung bestellung = bestellungRepository.findById(produktVerfuegbarAbgeschlossen.getBestellId()).orElseThrow(() -> new IllegalStateException("Bestellung nicht gefunden"));
+            bestellung.setStatus(Status.STORNIERT);
+            bestellung.setLastUpdateAm(OffsetDateTime.now());
+            bestellungRepository.save(bestellung);
+            throw new IllegalStateException("Produkte nicht verfuegbar");
+        }
+        log.info("Pruefung abgeschlossen fuer Bestellung {}", produktVerfuegbarAbgeschlossen.getBestellId());
     }
 
     private Double calculateSums(Bestellung bestellung) {

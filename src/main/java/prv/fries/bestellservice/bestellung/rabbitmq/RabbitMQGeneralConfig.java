@@ -19,10 +19,12 @@ public class RabbitMQGeneralConfig {
     public static final String QUEUE_ZAHLUNG_ABGESCHLOSSEN = "bestellung.zahlung.abgeschlossen.queue";
     public static final String QUEUE_VERSAND_ABGESCHLOSSEN = "bestellung.versand.abgeschlossen.queue";
     public static final String QUEUE_BESTELLUNG_EINGEHEND = "bestellung.bestellung.eingehend.queue";
+    public static final String QUEUE_PRUEFUNG_ABGESCHLOSSEN = "bestellung.pruefung.abgeschlossen.queue";
 
     public static final String ROUTING_KEY_ZAHLUNG_ABGESCHLOSSEN = "bestellung.zahlung.abgeschlossen";
     public static final String ROUTING_KEY_VERSAND_ABGESCHLOSSEN = "bestellung.versand.abgeschlossen";
     public static final String ROUTING_KEY_BESTELLUNG_EINGEHEND = "bestellung.bestellung.eingehend";
+    public static final String ROUTING_KEY_PRUEFUNG_ABGESCHLOSSEN = "bestellung.pruefung.abgeschlossen";
 
     public static final String ROUTING_KEY_BESTELLUNG_ANGELEGT = "bestellung.angelegt";
     public static final String ROUTING_KEY_BESTELLUNG_ABGESCHLOSSEN = "bestellung.abgeschlossen";
@@ -57,6 +59,18 @@ public class RabbitMQGeneralConfig {
     @Bean
     public Queue bestellungEingehendQueue() {
         return new Queue(QUEUE_BESTELLUNG_EINGEHEND, true);
+    }
+
+    @Bean
+    public Queue pruefungAbgeschlossenQueue() {
+        return new Queue(QUEUE_PRUEFUNG_ABGESCHLOSSEN, true);
+    }
+
+    @Bean
+    public Binding bindPruefungQueueToExchange(Queue pruefungAbgeschlossenQueue, TopicExchange bestellungExchange) {
+        return BindingBuilder.bind(pruefungAbgeschlossenQueue)
+                .to(bestellungExchange)
+                .with(ROUTING_KEY_PRUEFUNG_ABGESCHLOSSEN);
     }
 
     @Bean

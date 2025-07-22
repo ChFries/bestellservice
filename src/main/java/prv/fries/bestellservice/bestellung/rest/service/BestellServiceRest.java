@@ -14,6 +14,7 @@ import prv.fries.bestellservice.bestellung.service.ProduktService;
 import prv.fries.bestellservice.bestellung.service.VersandService;
 import prv.fries.bestellservice.generated.BestellungDto;
 import prv.fries.bestellservice.generated.client.payment.ZahlungDto;
+import prv.fries.bestellservice.generated.client.produkt.ProduktVerfuegbarDto;
 import prv.fries.bestellservice.generated.client.versand.VersandauftragDto;
 
 import java.time.OffsetDateTime;
@@ -50,9 +51,16 @@ public class BestellServiceRest implements BestellService {
         bestellung = bestellungRepository.save(bestellung);
         log.info("Bestellung angelegt");
         bestellungDto.setId(bestellung.getId());
-        produktService.pruefeVerfuerbarkeit(bestellungDto);
-        createZahlung(bestellung);
-        erstelleVersandauftrag(bestellung);
+        try {
+            produktService.pruefeVerfuerbarkeit(bestellungDto);
+            createZahlung(bestellung);
+            erstelleVersandauftrag(bestellung);
+        }catch (IllegalStateException e) {
+            log.error("Fehler beim Ausführen der Bestellung {}", e.getMessage());
+            bestellung.setLastUpdateAm(OffsetDateTime.now());
+            bestellung.setStatus(Status.STORNIERT);
+            bestellungRepository.save(bestellung);
+        }
         return bestellungRepository.findById(bestellung.getId()).orElseThrow(() -> new IllegalStateException("Bestellung nicht gefunden"));
     }
 
@@ -87,7 +95,14 @@ public class BestellServiceRest implements BestellService {
             bestellung.setLastUpdateAm(OffsetDateTime.now());
             log.info("Sendung mit Id {} wurde für Bestellung {} versendet", versandauftragAbgeschlossen.getId(), versandauftragAbgeschlossen.getBestellungId());
             bestellungRepository.save(bestellung);
+        }else {
+            throw new IllegalStateException("Versandauftrag nicht erfolgreich");
         }
+    }
+
+    @Override
+    public void updatePruefungAbgeschlossen(ProduktVerfuegbarDto produktVerfuegbarAbgeschlossen) {
+        //unnecessary for produktservice
     }
 
 
