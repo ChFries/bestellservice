@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import prv.fries.bestellservice.bestellung.entity.Bestellung;
 import prv.fries.bestellservice.bestellung.mapper.BestellungMapper;
-import prv.fries.bestellservice.bestellung.service.BestellService;
+import prv.fries.bestellservice.bestellung.rest.service.BestellService;
 import prv.fries.bestellservice.generated.BestellungDto;
 import prv.fries.bestellservice.generated.StatusUpdateDto;
 
@@ -48,7 +48,7 @@ public class BestellungenController implements BestellungApi {
 
     @Override
     public ResponseEntity<BestellungDto> updateZahlungsstatusById(UUID bestellId, StatusUpdateDto statusUpdate) {
-        Bestellung bestellung = bestellService.updateBestellung(bestellId, bestellungMapper.toStatus(statusUpdate.getStatus()));
+        Bestellung bestellung = bestellService.updateBestellung(bestellId, bestellungMapper.toStatusDto(statusUpdate.getStatus()));
         return ResponseEntity.status(HttpStatus.OK).body(bestellungMapper.toDTO(bestellung));
     }
 }

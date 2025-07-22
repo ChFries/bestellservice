@@ -1,4 +1,4 @@
-package prv.fries.bestellservice.bestellung.service;
+package prv.fries.bestellservice.bestellung.rest.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,9 +8,7 @@ import prv.fries.bestellservice.bestellung.entity.Bestellung;
 import prv.fries.bestellservice.bestellung.mapper.BestellungMapper;
 import prv.fries.bestellservice.bestellung.model.Status;
 import prv.fries.bestellservice.bestellung.repository.BestellungRepository;
-import prv.fries.bestellservice.bestellung.rest.service.PaymentService;
-import prv.fries.bestellservice.bestellung.rest.service.ProduktService;
-import prv.fries.bestellservice.bestellung.rest.service.VersandService;
+import prv.fries.bestellservice.bestellung.service.PaymentService;
 import prv.fries.bestellservice.generated.BestellungDto;
 
 import java.time.OffsetDateTime;
@@ -29,7 +27,7 @@ public class BestellService {
 
     private final ProduktService produktService;
 
-    private final PaymentService paymentService;
+    private final PaymentService paymentServiceRest;
 
     private final VersandService versandService;
 
@@ -47,7 +45,7 @@ public class BestellService {
         bestellung = bestellungRepository.save(bestellung);
         log.info("Bestellung with verfuegbaren Produkten created");
 
-        paymentService.erstelleZahlung(bestellung);
+        paymentServiceRest.erstelleZahlung(bestellung);
         bestellung = bestellungRepository.save(bestellung);
 
         versandService.erstelleZahlung(bestellung);

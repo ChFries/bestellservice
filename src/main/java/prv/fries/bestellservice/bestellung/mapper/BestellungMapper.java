@@ -24,14 +24,14 @@ public interface BestellungMapper {
     @ValueMapping(source="VERSENDET", target="VERSENDET")
     @ValueMapping(source="ABGESCHLOSSEN", target="ABGESCHLOSSEN")
     @ValueMapping(source="STORNIERT", target="STORNIERT")
-    Status toStatus(StatusDto statusDto);
+    Status toStatusDto(StatusDto statusDto);
 
     @ValueMapping(source="OFFEN", target="OFFEN")
     @ValueMapping(source="BEZAHLT", target="BEZAHLT")
     @ValueMapping(source="VERSENDET", target="VERSENDET")
     @ValueMapping(source="ABGESCHLOSSEN", target="ABGESCHLOSSEN")
     @ValueMapping(source="STORNIERT", target="STORNIERT")
-    StatusDto toStatus(Status status);
+    StatusDto toStatusDto(Status status);
 
 
 }

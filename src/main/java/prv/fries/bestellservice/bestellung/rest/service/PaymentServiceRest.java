@@ -8,6 +8,7 @@ import org.springframework.web.client.RestClientException;
 import prv.fries.bestellservice.bestellung.entity.Bestellung;
 import prv.fries.bestellservice.bestellung.mapper.ZahlungMapper;
 import prv.fries.bestellservice.bestellung.model.Status;
+import prv.fries.bestellservice.bestellung.service.PaymentService;
 import prv.fries.bestellservice.generated.client.payment.ZahlungDto;
 
 import java.time.OffsetDateTime;
@@ -16,12 +17,13 @@ import java.time.OffsetDateTime;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class PaymentService {
+public class PaymentServiceRest implements PaymentService {
 
     private final ZahlungApi zahlungApiClient;
 
     private final ZahlungMapper zahlungMapper;
 
+    @Override
     public void erstelleZahlung(Bestellung bestellung) {
         ZahlungDto dto = zahlungMapper.fromEntity(bestellung);
         try {
