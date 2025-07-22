@@ -18,8 +18,6 @@ public class BestellungEventListener {
 
     @RabbitListener(queues = RabbitMQGeneralConfig.QUEUE_BESTELLUNG_EINGEHEND)
     public void handleBestellungEingegangen(BestellungDto bestellungErhalten) {
-        // Verarbeite Zahlung abgeschlossen
-        log.info("Zahlung abgeschlossen empfangen: {}", bestellungErhalten.toString());
         bestellService.erstelleBestellung(bestellungErhalten);
     }
 

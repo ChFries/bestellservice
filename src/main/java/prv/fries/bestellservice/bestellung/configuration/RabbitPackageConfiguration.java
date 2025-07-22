@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Profile;
         basePackages = "prv.fries.bestellservice",
         excludeFilters = @ComponentScan.Filter(
                 type = FilterType.ASPECTJ,
-                pattern = "prv.fries.bestellservice.bestellung.rest.*"
+                pattern = "prv.fries.bestellservice.bestellung.rest.*.*"
         )
 )
 @Profile("RABBITMQ")
