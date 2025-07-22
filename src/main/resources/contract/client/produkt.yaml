@@ -68,18 +68,14 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/ProduktVerfuegbarkeitDto'
+              $ref: '#/components/schemas/ProduktVerfuegbarkeitDto'
       responses:
         '200':
           description: Verfügbarkeitsstatus
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProduktVerfuegbarDto'
+                $ref: '#/components/schemas/ProduktVerfuegbarDto'
         '404':
           description: Produkt nicht gefunden
 
@@ -115,8 +111,22 @@ components:
           type: integer
           description: Anzahl verfügbarer Artikel im Lager
           example: 42
-
     ProduktVerfuegbarkeitDto:
+      type: object
+      required:
+        - bestellId
+        - positionen
+      properties:
+        bestellId:
+          type: string
+          format: uuid
+          description: eindeutige Id der zugeordneten Bestellung
+          example: "123e4567-e89b-12d3-a456-123412341234"
+        positionen:
+          type: array
+          items:
+            $ref: '#/components/schemas/abgefragtePositionen'
+    abgefragtePositionen:
       type: object
       required:
         - produktId
@@ -139,6 +149,21 @@ components:
           description: Preis des Produkts
           example: 12.34
     ProduktVerfuegbarDto:
+      type: object
+      required:
+        - bestellId
+        - positionen
+      properties:
+        bestellId:
+          type: string
+          format: uuid
+          description: eindeutige Id der zugeordneten Bestellung
+          example: "123e4567-e89b-12d3-a456-123412341234"
+        positionen:
+          type: array
+          items:
+            $ref: '#/components/schemas/ueberprueftePositionen'
+    ueberprueftePositionen:
       type: object
       required:
         - produktId

@@ -38,7 +38,6 @@ public class BestellServiceRest implements BestellService {
 
     @Override
     public Bestellung erstelleBestellung(BestellungDto bestellungDto) {
-        produktService.pruefeVerfuerbarkeit(bestellungDto);
         Bestellung bestellung = bestellungMapper.toEntity(bestellungDto);
         bestellung.setStatus(Status.OFFEN);
         OffsetDateTime now = OffsetDateTime.now();
@@ -49,7 +48,9 @@ public class BestellServiceRest implements BestellService {
             pos.setBestellung(bestellung);
         }
         bestellung = bestellungRepository.save(bestellung);
-        log.info("Bestellung with verfuegbaren Produkten created");
+        log.info("Bestellung angelegt");
+        bestellungDto.setId(bestellung.getId());
+        produktService.pruefeVerfuerbarkeit(bestellungDto);
         createZahlung(bestellung);
         erstelleVersandauftrag(bestellung);
         return bestellungRepository.findById(bestellung.getId()).orElseThrow(() -> new IllegalStateException("Bestellung nicht gefunden"));

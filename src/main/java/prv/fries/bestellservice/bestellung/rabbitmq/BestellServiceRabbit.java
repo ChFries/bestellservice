@@ -9,6 +9,7 @@ import prv.fries.bestellservice.bestellung.mapper.BestellungMapper;
 import prv.fries.bestellservice.bestellung.model.Status;
 import prv.fries.bestellservice.bestellung.repository.BestellungRepository;
 import prv.fries.bestellservice.bestellung.service.BestellService;
+import prv.fries.bestellservice.bestellung.service.ProduktService;
 import prv.fries.bestellservice.generated.BestellungDto;
 import prv.fries.bestellservice.generated.client.payment.ZahlungDto;
 import prv.fries.bestellservice.generated.client.versand.VersandauftragDto;
@@ -22,7 +23,7 @@ public class BestellServiceRabbit implements BestellService {
 
     private final BestellungRepository bestellungRepository;
     private final BestellungMapper bestellungMapper;
-    private final BestellungPublisher bestellungPublisher;
+    private final ProduktService produktService;
 
     @Override
     public Bestellung erstelleBestellung(BestellungDto bestellungDto) {
@@ -36,7 +37,7 @@ public class BestellServiceRabbit implements BestellService {
             pos.setBestellung(bestellung);
         }
         bestellungRepository.save(bestellung);
-        bestellungPublisher.publishBestellungAngelegt(bestellungMapper.toDTO(bestellung));
+        produktService.pruefeVerfuerbarkeit(bestellungDto);
         return bestellung;
     }
 
