@@ -93,6 +93,11 @@ public class BestellServiceRest implements BestellService {
         }
     }
 
+    @Override
+    public void updateZahlungsStatus1(BestellungDto zahlungErhalten) {
+        //Todo Refactor
+    }
+
     private void erstelleVersandauftrag(Bestellung bestellung) {
         var response = versandService.erstelleVersandauftragRequest(bestellung);
         updateVersandStatus(response);

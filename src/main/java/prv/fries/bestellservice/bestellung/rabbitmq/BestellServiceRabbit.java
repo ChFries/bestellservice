@@ -13,6 +13,7 @@ import prv.fries.bestellservice.bestellung.service.BestellService;
 import prv.fries.bestellservice.bestellung.service.ProduktService;
 import prv.fries.bestellservice.generated.BestellPositionDto;
 import prv.fries.bestellservice.generated.BestellungDto;
+import prv.fries.bestellservice.generated.StatusDto;
 import prv.fries.bestellservice.generated.client.payment.ZahlungDto;
 import prv.fries.bestellservice.generated.client.versand.VersandauftragDto;
 
@@ -48,6 +49,20 @@ public class BestellServiceRabbit implements BestellService {
     public void updateZahlungsStatus(ZahlungDto zahlungErhalten) {
         //todo
     }
+
+    @Override
+    public void updateZahlungsStatus1(BestellungDto zahlungErhalten) {
+        if (zahlungErhalten.getStatus() == StatusDto.BEZAHLT) {
+            Bestellung bestellung = bestellungRepository.findById(zahlungErhalten.getId()).orElseThrow(() -> new IllegalStateException("BestellId nicht im ZahlungDto gefunden aber sollte da sein"));
+            log.info("Rechnung {} beglichen", zahlungErhalten.getId());
+            bestellung.setStatus(Status.BEZAHLT);
+            bestellung.setLastUpdateAm(OffsetDateTime.now());
+            bestellungRepository.save(bestellung);
+        } else {
+            throw new IllegalStateException("Zahlung nicht erfolgreich");
+        }
+    }
+
 
     @Override
     public void updateVersandStatus(VersandauftragDto versandauftragAbgeschlossen) {

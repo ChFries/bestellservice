@@ -6,7 +6,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import prv.fries.bestellservice.bestellung.service.BestellService;
 import prv.fries.bestellservice.generated.BestellungDto;
-import prv.fries.bestellservice.generated.client.payment.ZahlungDto;
 import prv.fries.bestellservice.generated.client.versand.VersandauftragDto;
 
 @Component
@@ -27,10 +26,8 @@ public class BestellungEventListener {
     }
 
     @RabbitListener(queues = RabbitMQGeneralConfig.QUEUE_ZAHLUNG_ABGESCHLOSSEN)
-    public void handleZahlungAbgeschlossen(ZahlungDto zahlungErhalten) {
-        // Verarbeite Zahlung abgeschlossen
-        log.info("Zahlung abgeschlossen empfangen: {}", zahlungErhalten.toString());
-        bestellService.updateZahlungsStatus(zahlungErhalten);
+    public void handleZahlungAbgeschlossen(BestellungDto zahlungErhalten) {
+        bestellService.updateZahlungsStatus1(zahlungErhalten);
     }
 
     @RabbitListener(queues = RabbitMQGeneralConfig.QUEUE_VERSAND_ABGESCHLOSSEN)
