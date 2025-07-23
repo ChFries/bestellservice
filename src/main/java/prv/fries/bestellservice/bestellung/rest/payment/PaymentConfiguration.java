@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
-import prv.fries.bestellservice.generated.client.ApiClient;
+import prv.fries.bestellservice.ApiClient;
 
 @Configuration
 public class PaymentConfiguration {

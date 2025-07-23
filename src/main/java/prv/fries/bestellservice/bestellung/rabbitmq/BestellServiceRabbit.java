@@ -14,7 +14,6 @@ import prv.fries.bestellservice.bestellung.service.ProduktService;
 import prv.fries.bestellservice.generated.BestellPositionDto;
 import prv.fries.bestellservice.generated.BestellungDto;
 import prv.fries.bestellservice.generated.StatusDto;
-import prv.fries.bestellservice.generated.client.payment.ZahlungDto;
 import prv.fries.bestellservice.generated.client.versand.VersandauftragDto;
 
 import java.time.OffsetDateTime;
@@ -46,12 +45,7 @@ public class BestellServiceRabbit implements BestellService {
     }
 
     @Override
-    public void updateZahlungsStatus(ZahlungDto zahlungErhalten) {
-        //todo
-    }
-
-    @Override
-    public void updateZahlungsStatus1(BestellungDto zahlungErhalten) {
+    public void updateZahlungsStatus(BestellungDto zahlungErhalten) {
         if (zahlungErhalten.getStatus() == StatusDto.BEZAHLT) {
             Bestellung bestellung = bestellungRepository.findById(zahlungErhalten.getId()).orElseThrow(() -> new IllegalStateException("BestellId nicht im ZahlungDto gefunden aber sollte da sein"));
             log.info("Rechnung {} beglichen", zahlungErhalten.getId());

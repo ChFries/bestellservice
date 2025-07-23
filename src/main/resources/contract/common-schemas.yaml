@@ -1,0 +1,99 @@
+components:
+  schemas:
+    BestellungDto:
+      type: object
+      required:
+        - kundeId
+        - bestellPositionen
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Eindeutige Bestell-ID
+          example: "1a2b3c4d-5678-90ab-cdef-1234567890ab"
+        kundeId:
+          type: string
+          format: uuid
+          description: ID des Kunden, der die Bestellung aufgegeben hat
+          example: "98765432-abcd-1234-ef00-112233445566"
+        bestellPositionen:
+          type: array
+          description: Liste der bestellten Positionen
+          items:
+            $ref: '#/components/schemas/BestellPositionDto'
+        status:
+          $ref: '#/components/schemas/StatusDto'
+        erstelltAm:
+          type: string
+          format: date-time
+          description: Zeitstempel der Bestellerstellung
+          example: "2025-06-20T12:34:56Z"
+        geaendertAm:
+          type: string
+          format: date-time
+          description: Zeitstempel der letzten Aenderung
+          example: "2025-06-20T12:34:56Z"
+        zahlungsreferenz:
+          type: string
+          description: Referenz zur Zahlung, falls vorhanden
+          example: "PAY-2025-123456"
+        versandreferenz:
+          type: string
+          description: Referenz zum Versand, falls vorhanden
+          example: "SHIP-XYZ-789456"
+    BestellPositionDto:
+      type: object
+      required:
+        - produktId
+        - menge
+        - einzelpreis
+      properties:
+        produktId:
+          type: string
+          format: uuid
+          description: Produkt-ID der bestellten Ware
+          example: "abc12345-def6-7890-ghij-klmnopqrstuv"
+        menge:
+          type: integer
+          format: int32
+          minimum: 1
+          description: Anzahl der bestellten Einheiten
+          example: 2
+        einzelpreis:
+          type: number
+          format: float
+          description: Preis pro Einheit in Euro zum Bestellzeitpunkt
+          example: 74.99
+        verfuegbar:
+          type: boolean
+          description: Position verfuegbar
+          example: true
+    StatusDto:
+      type: string
+      description: Aktueller Status der Bestellung
+      enum: [ offen, bezahlt, versendet, abgeschlossen, storniert, geprueft ]
+      example: "offen"
+    StatusUpdateDto:
+      type: object
+      required:
+        - status
+        - id
+      properties:
+        status:
+          $ref: "#/components/schemas/StatusDto"
+        id:
+          type: string
+          format: uuid
+          description: Eindeutige Bestell-ID
+          example: "1a2b3c4d-5678-90ab-cdef-1234567890ab"
+    ErrorDto:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+

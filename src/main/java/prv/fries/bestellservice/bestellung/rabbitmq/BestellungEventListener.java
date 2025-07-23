@@ -26,7 +26,7 @@ public class BestellungEventListener {
 
     @RabbitListener(queues = RabbitMQGeneralConfig.QUEUE_ZAHLUNG_ABGESCHLOSSEN)
     public void handleZahlungAbgeschlossen(BestellungDto zahlungErhalten) {
-        bestellService.updateZahlungsStatus1(zahlungErhalten);
+        bestellService.updateZahlungsStatus(zahlungErhalten);
     }
 
     @RabbitListener(queues = RabbitMQGeneralConfig.QUEUE_VERSAND_ABGESCHLOSSEN)

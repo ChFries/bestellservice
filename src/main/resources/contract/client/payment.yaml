@@ -43,14 +43,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ZahlungDto'
+              $ref: '#/components/schemas/BestellungDto'
       responses:
         '201':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ZahlungDto'
+                $ref: '#/components/schemas/BestellungDto'
         '400':
           description: Invalid input
         '422':
@@ -121,13 +121,13 @@ components:
           description: Status der Zahlung
           enum: [offen, erfolgreich, fehlgeschlagen, storniert]
           example: "erfolgreich"
+    BestellungDto:
+      $ref: '../common-schemas.yaml#/components/schemas/BestellungDto'
+    BestellPositionDto:
+      $ref: '../common-schemas.yaml#/components/schemas/BestellPositionDto'
+    StatusDto:
+      $ref: '../common-schemas.yaml#/components/schemas/StatusDto'
+    StatusUpdateDto:
+      $ref: '../common-schemas.yaml#/components/schemas/StatusUpdateDto'
     ErrorDto:
-      type: object
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-      required:
-        - code
-        - message
+      $ref: '../common-schemas.yaml#/components/schemas/ErrorDto'

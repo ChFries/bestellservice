@@ -14,7 +14,7 @@ import prv.fries.bestellservice.bestellung.service.PaymentService;
 import prv.fries.bestellservice.bestellung.service.ProduktService;
 import prv.fries.bestellservice.bestellung.service.VersandService;
 import prv.fries.bestellservice.generated.BestellungDto;
-import prv.fries.bestellservice.generated.client.payment.ZahlungDto;
+import prv.fries.bestellservice.generated.StatusDto;
 import prv.fries.bestellservice.generated.client.versand.VersandauftragDto;
 
 import java.time.OffsetDateTime;
@@ -81,21 +81,16 @@ public class BestellServiceRest implements BestellService {
     }
 
     @Override
-    public void updateZahlungsStatus(ZahlungDto response) {
-        if (response.getStatus() == ZahlungDto.StatusEnum.ERFOLGREICH) {
-            Bestellung bestellung = bestellungRepository.findById(response.getBestellungId()).orElseThrow(() -> new IllegalStateException("BestellId nicht im ZahlungDto gefunden aber sollte da sein"));
-            log.info("Betrag {} wurde für Rechnung {} beglichen", response.getBetrag(), response.getBestellungId());
+    public void updateZahlungsStatus(BestellungDto response) {
+        if (response.getStatus() == StatusDto.BEZAHLT) {
+            Bestellung bestellung = bestellungRepository.findById(response.getId()).orElseThrow(() -> new IllegalStateException("BestellId nicht im ZahlungDto gefunden aber sollte da sein"));
+            log.info("Betrag {} wurde für Rechnung {} beglichen", bestellung.getGesamtbetrag(), bestellung.getId());
             bestellung.setStatus(Status.BEZAHLT);
             bestellung.setLastUpdateAm(OffsetDateTime.now());
             bestellungRepository.save(bestellung);
         } else {
             throw new IllegalStateException("Zahlung nicht erfolgreich");
         }
-    }
-
-    @Override
-    public void updateZahlungsStatus1(BestellungDto zahlungErhalten) {
-        //Todo Refactor
     }
 
     private void erstelleVersandauftrag(Bestellung bestellung) {
