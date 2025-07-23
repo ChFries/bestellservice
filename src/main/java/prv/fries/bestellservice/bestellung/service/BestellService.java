@@ -2,7 +2,6 @@ package prv.fries.bestellservice.bestellung.service;
 
 import prv.fries.bestellservice.bestellung.entity.Bestellung;
 import prv.fries.bestellservice.generated.BestellungDto;
-import prv.fries.bestellservice.generated.client.versand.VersandauftragDto;
 
 public interface BestellService {
 
@@ -10,9 +9,7 @@ public interface BestellService {
 
     void updateZahlungsStatus(BestellungDto zahlungErhalten);
 
-    void updateVersandStatus(VersandauftragDto versandauftragAbgeschlossen);
-
-    void updateVersandStatus1(BestellungDto versandauftragAbgeschlossen);
+    void updateVersandStatus(BestellungDto versandauftragAbgeschlossen);
 
     void updatePruefungAbgeschlossen(BestellungDto bestellungUeberprueft);
 }

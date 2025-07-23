@@ -208,7 +208,7 @@
                             <generateApiTests>false</generateApiTests>
                             <generateModelTests>false</generateModelTests>
                             <configOptions>
-                                <modelPackage>prv.fries.bestellservice.generated.client.versand</modelPackage>
+                                <modelPackage>prv.fries.bestellservice.generated</modelPackage>
                                 <library>resttemplate</library>
                                 <useTags>true</useTags>
                                 <useJakartaEe>true</useJakartaEe>

@@ -11,12 +11,10 @@ import prv.fries.bestellservice.bestellung.model.Status;
 import prv.fries.bestellservice.bestellung.repository.BestellungRepository;
 import prv.fries.bestellservice.bestellung.service.BestellService;
 import prv.fries.bestellservice.bestellung.service.PaymentService;
-import prv.fries.bestellservice.bestellung.service.ProduktService;
 import prv.fries.bestellservice.bestellung.service.VersandService;
 import prv.fries.bestellservice.generated.BestellPositionDto;
 import prv.fries.bestellservice.generated.BestellungDto;
 import prv.fries.bestellservice.generated.StatusDto;
-import prv.fries.bestellservice.generated.client.versand.VersandauftragDto;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -31,7 +29,7 @@ public class BestellServiceRest implements BestellService {
 
     private final BestellungMapper bestellungMapper;
 
-    private final ProduktService produktService;
+    private final ProduktServiceRest produktService;
 
     private final PaymentService paymentServiceRest;
 
@@ -77,7 +75,7 @@ public class BestellServiceRest implements BestellService {
     }
 
     private void erstelleVersandauftrag(Bestellung bestellung) {
-        var versendeteBestellung = versandService.erstelleVersandauftragRequest(bestellung);
+        var versendeteBestellung = versandService.erstelleVersandauftragRequest(bestellungMapper.toDTO(bestellung));
         updateVersandStatus(versendeteBestellung);
     }
 
@@ -95,21 +93,16 @@ public class BestellServiceRest implements BestellService {
     }
 
     @Override
-    public void updateVersandStatus(VersandauftragDto versendeteBestellung){
-        if (versendeteBestellung.getStatus() == VersandauftragDto.StatusEnum.VERSENDET) {
-            Bestellung bestellung = bestellungRepository.findById(versendeteBestellung.getBestellungId()).orElseThrow(() -> new IllegalStateException("BestellId nicht im VersandAuftragDto gefunden aber sollte da sein"));
+    public void updateVersandStatus(BestellungDto versendeteBestellung){
+        if (versendeteBestellung.getStatus() == StatusDto.VERSENDET) {
+            Bestellung bestellung = bestellungRepository.findById(versendeteBestellung.getId()).orElseThrow(() -> new IllegalStateException("BestellId nicht im VersandAuftragDto gefunden aber sollte da sein"));
             bestellung.setStatus(Status.VERSENDET);
             bestellung.setLastUpdateAm(OffsetDateTime.now());
-            log.info("Sendung mit Id {} wurde für Bestellung {} versendet", versendeteBestellung.getId(), versendeteBestellung.getBestellungId());
+            log.info("Sendung mit Id {} wurde für Bestellung {} versendet", versendeteBestellung.getId(), versendeteBestellung.getId());
             bestellungRepository.save(bestellung);
         }else {
             throw new IllegalStateException("Versandauftrag nicht erfolgreich");
         }
-    }
-
-    @Override
-    public void updateVersandStatus1(BestellungDto versandauftragAbgeschlossen) {
-        // Todo refactor
     }
 
     @Override

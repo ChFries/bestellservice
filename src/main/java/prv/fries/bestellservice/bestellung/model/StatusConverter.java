@@ -14,8 +14,6 @@ public class StatusConverter implements AttributeConverter<Status, String> {
 
     @Override
     public Status convertToEntityAttribute(String dbData) {
-
-
         return Status.valueOf(dbData.toUpperCase());
     }
 

@@ -10,11 +10,9 @@ import prv.fries.bestellservice.bestellung.mapper.BestellungMapper;
 import prv.fries.bestellservice.bestellung.model.Status;
 import prv.fries.bestellservice.bestellung.repository.BestellungRepository;
 import prv.fries.bestellservice.bestellung.service.BestellService;
-import prv.fries.bestellservice.bestellung.service.ProduktService;
 import prv.fries.bestellservice.generated.BestellPositionDto;
 import prv.fries.bestellservice.generated.BestellungDto;
 import prv.fries.bestellservice.generated.StatusDto;
-import prv.fries.bestellservice.generated.client.versand.VersandauftragDto;
 
 import java.time.OffsetDateTime;
 
@@ -25,7 +23,7 @@ public class BestellServiceRabbit implements BestellService {
 
     private final BestellungRepository bestellungRepository;
     private final BestellungMapper bestellungMapper;
-    private final ProduktService produktService;
+    private final ProduktServiceRabbit produktService;
 
     @Override
     public Bestellung erstelleBestellung(BestellungDto bestellungDto) {
@@ -59,12 +57,7 @@ public class BestellServiceRabbit implements BestellService {
 
 
     @Override
-    public void updateVersandStatus(VersandauftragDto versandauftragAbgeschlossen) {
-        //todo
-    }
-
-    @Override
-    public void updateVersandStatus1(BestellungDto versandauftragAbgeschlossen) {
+    public void updateVersandStatus(BestellungDto versandauftragAbgeschlossen) {
         if (versandauftragAbgeschlossen.getStatus() == StatusDto.VERSENDET) {
             Bestellung bestellung = bestellungRepository.findById(versandauftragAbgeschlossen.getId()).orElseThrow(() -> new IllegalStateException("BestellId nicht im VersandAuftragDto gefunden aber sollte da sein"));
             bestellung.setStatus(Status.VERSENDET);

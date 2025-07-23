@@ -20,14 +20,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VersandauftragRequest'
+              $ref: '#/components/schemas/BestellungDto'
       responses:
         '200':
           description: Erfolgreich angelegter Versandauftrag
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VersandauftragDto'
+                $ref: '#/components/schemas/BestellungDto'
         '400':
           description: Ungültige Anfrage
         '500':
@@ -71,3 +71,13 @@ components:
           description: Aktueller Status der Bestellung
           enum: [ erfasst, versendet ]
           example: "offen"
+    BestellungDto:
+      $ref: '../common-schemas.yaml#/components/schemas/BestellungDto'
+    BestellPositionDto:
+      $ref: '../common-schemas.yaml#/components/schemas/BestellPositionDto'
+    StatusDto:
+      $ref: '../common-schemas.yaml#/components/schemas/StatusDto'
+    StatusUpdateDto:
+      $ref: '../common-schemas.yaml#/components/schemas/StatusUpdateDto'
+    ErrorDto:
+      $ref: '../common-schemas.yaml#/components/schemas/ErrorDto'

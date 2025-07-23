@@ -3,6 +3,7 @@ components:
     BestellungDto:
       type: object
       required:
+        - id
         - kundeId
         - bestellPositionen
       properties:

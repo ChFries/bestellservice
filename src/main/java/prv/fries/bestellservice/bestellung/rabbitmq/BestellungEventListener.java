@@ -31,7 +31,6 @@ public class BestellungEventListener {
 
     @RabbitListener(queues = RabbitMQGeneralConfig.QUEUE_VERSAND_ABGESCHLOSSEN)
     public void handleVersandAbgeschlossen(BestellungDto versandauftragAbgeschlossen) {
-        log.info("Versand abgeschlossen empfangen: {}", versandauftragAbgeschlossen.toString());
-        bestellService.updateVersandStatus1(versandauftragAbgeschlossen);
+        bestellService.updateVersandStatus(versandauftragAbgeschlossen);
     }
 }
