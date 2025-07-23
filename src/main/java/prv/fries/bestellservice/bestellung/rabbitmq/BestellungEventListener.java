@@ -6,7 +6,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import prv.fries.bestellservice.bestellung.service.BestellService;
 import prv.fries.bestellservice.generated.BestellungDto;
-import prv.fries.bestellservice.generated.client.versand.VersandauftragDto;
 
 @Component
 @RequiredArgsConstructor
@@ -31,9 +30,8 @@ public class BestellungEventListener {
     }
 
     @RabbitListener(queues = RabbitMQGeneralConfig.QUEUE_VERSAND_ABGESCHLOSSEN)
-    public void handleVersandAbgeschlossen(VersandauftragDto versandauftragAbgeschlossen) {
-        // Verarbeite Versand abgeschlossen
+    public void handleVersandAbgeschlossen(BestellungDto versandauftragAbgeschlossen) {
         log.info("Versand abgeschlossen empfangen: {}", versandauftragAbgeschlossen.toString());
-        bestellService.updateVersandStatus(versandauftragAbgeschlossen);
+        bestellService.updateVersandStatus1(versandauftragAbgeschlossen);
     }
 }

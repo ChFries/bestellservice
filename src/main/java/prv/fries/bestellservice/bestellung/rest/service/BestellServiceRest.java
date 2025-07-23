@@ -117,6 +117,11 @@ public class BestellServiceRest implements BestellService {
     }
 
     @Override
+    public void updateVersandStatus1(BestellungDto versandauftragAbgeschlossen) {
+        // Todo refactor
+    }
+
+    @Override
     public void updatePruefungAbgeschlossen(BestellungDto produktVerfuegbarAbgeschlossen) {
         //unnecessary for produktservice
     }

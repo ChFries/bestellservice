@@ -70,6 +70,19 @@ public class BestellServiceRabbit implements BestellService {
     }
 
     @Override
+    public void updateVersandStatus1(BestellungDto versandauftragAbgeschlossen) {
+        if (versandauftragAbgeschlossen.getStatus() == StatusDto.VERSENDET) {
+            Bestellung bestellung = bestellungRepository.findById(versandauftragAbgeschlossen.getId()).orElseThrow(() -> new IllegalStateException("BestellId nicht im VersandAuftragDto gefunden aber sollte da sein"));
+            bestellung.setStatus(Status.VERSENDET);
+            bestellung.setLastUpdateAm(OffsetDateTime.now());
+            log.info("Sendung mit Id {} wurde für Bestellung {} versendet", versandauftragAbgeschlossen.getId(), versandauftragAbgeschlossen.getId());
+            bestellungRepository.save(bestellung);
+        }else {
+            throw new IllegalStateException("Versandauftrag nicht erfolgreich");
+        }
+    }
+
+    @Override
     public void updatePruefungAbgeschlossen(BestellungDto ueberpruefteBestellung) {
         if (!ueberpruefteBestellung.getBestellPositionen().stream().allMatch(BestellPositionDto::getVerfuegbar)) {
             Bestellung bestellung = bestellungRepository.findById(ueberpruefteBestellung.getId()).orElseThrow(() -> new IllegalStateException("Bestellung nicht gefunden"));
