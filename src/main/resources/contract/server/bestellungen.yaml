@@ -216,6 +216,10 @@ components:
           format: float
           description: Preis pro Einheit in Euro zum Bestellzeitpunkt
           example: 74.99
+        verfuegbar:
+          type: boolean
+          description: Position verfuegbar
+          example: true
     StatusDto:
       type: string
       description: Aktueller Status der Bestellung

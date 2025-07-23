@@ -15,7 +15,6 @@ import prv.fries.bestellservice.bestellung.service.ProduktService;
 import prv.fries.bestellservice.bestellung.service.VersandService;
 import prv.fries.bestellservice.generated.BestellungDto;
 import prv.fries.bestellservice.generated.client.payment.ZahlungDto;
-import prv.fries.bestellservice.generated.client.produkt.ProduktVerfuegbarDto;
 import prv.fries.bestellservice.generated.client.versand.VersandauftragDto;
 
 import java.time.OffsetDateTime;
@@ -113,7 +112,7 @@ public class BestellServiceRest implements BestellService {
     }
 
     @Override
-    public void updatePruefungAbgeschlossen(ProduktVerfuegbarDto produktVerfuegbarAbgeschlossen) {
+    public void updatePruefungAbgeschlossen(BestellungDto produktVerfuegbarAbgeschlossen) {
         //unnecessary for produktservice
     }
 

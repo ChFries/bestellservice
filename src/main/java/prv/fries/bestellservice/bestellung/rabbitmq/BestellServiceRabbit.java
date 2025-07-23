@@ -11,10 +11,9 @@ import prv.fries.bestellservice.bestellung.model.Status;
 import prv.fries.bestellservice.bestellung.repository.BestellungRepository;
 import prv.fries.bestellservice.bestellung.service.BestellService;
 import prv.fries.bestellservice.bestellung.service.ProduktService;
+import prv.fries.bestellservice.generated.BestellPositionDto;
 import prv.fries.bestellservice.generated.BestellungDto;
 import prv.fries.bestellservice.generated.client.payment.ZahlungDto;
-import prv.fries.bestellservice.generated.client.produkt.ProduktVerfuegbarDto;
-import prv.fries.bestellservice.generated.client.produkt.UeberprueftePositionen;
 import prv.fries.bestellservice.generated.client.versand.VersandauftragDto;
 
 import java.time.OffsetDateTime;
@@ -56,16 +55,16 @@ public class BestellServiceRabbit implements BestellService {
     }
 
     @Override
-    public void updatePruefungAbgeschlossen(ProduktVerfuegbarDto produktVerfuegbarAbgeschlossen) {
-        if (!produktVerfuegbarAbgeschlossen.getPositionen().stream().allMatch(UeberprueftePositionen::getVerfuegbar)) {
-            Bestellung bestellung = bestellungRepository.findById(produktVerfuegbarAbgeschlossen.getBestellId()).orElseThrow(() -> new IllegalStateException("Bestellung nicht gefunden"));
+    public void updatePruefungAbgeschlossen(BestellungDto ueberpruefteBestellung) {
+        if (!ueberpruefteBestellung.getBestellPositionen().stream().allMatch(BestellPositionDto::getVerfuegbar)) {
+            Bestellung bestellung = bestellungRepository.findById(ueberpruefteBestellung.getId()).orElseThrow(() -> new IllegalStateException("Bestellung nicht gefunden"));
             bestellung.setStatus(Status.STORNIERT);
             bestellung.setLastUpdateAm(OffsetDateTime.now());
             bestellungRepository.save(bestellung);
             throw new IllegalStateException("Produkte nicht verfuegbar");
         }
-        log.info("Pruefung abgeschlossen fuer Bestellung {}", produktVerfuegbarAbgeschlossen.getBestellId());
-        Bestellung bestellung = bestellungRepository.findById(produktVerfuegbarAbgeschlossen.getBestellId()).orElseThrow(() -> new IllegalStateException("Bestellung nicht gefunden"));
+        log.info("Pruefung abgeschlossen fuer Bestellung {}", ueberpruefteBestellung.getId());
+        Bestellung bestellung = bestellungRepository.findById(ueberpruefteBestellung.getId()).orElseThrow(() -> new IllegalStateException("Bestellung nicht gefunden"));
         try {
             bestellung.setStatus(Status.GEPRUEFT);
             bestellung.setLastUpdateAm(OffsetDateTime.now());

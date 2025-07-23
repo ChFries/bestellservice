@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import prv.fries.bestellservice.bestellung.service.BestellService;
 import prv.fries.bestellservice.generated.BestellungDto;
 import prv.fries.bestellservice.generated.client.payment.ZahlungDto;
-import prv.fries.bestellservice.generated.client.produkt.ProduktVerfuegbarDto;
 import prv.fries.bestellservice.generated.client.versand.VersandauftragDto;
 
 @Component
@@ -18,8 +17,8 @@ public class BestellungEventListener {
     private final BestellService bestellService;
 
     @RabbitListener(queues = RabbitMQGeneralConfig.QUEUE_PRUEFUNG_ABGESCHLOSSEN)
-    public void handlePruefungAbgeshchlossen(ProduktVerfuegbarDto produktVerfuegbarDto) {
-        bestellService.updatePruefungAbgeschlossen(produktVerfuegbarDto);
+    public void handlePruefungAbgeshchlossen(BestellungDto bestellungUeberprueft) {
+        bestellService.updatePruefungAbgeschlossen(bestellungUeberprueft);
     }
 
     @RabbitListener(queues = RabbitMQGeneralConfig.QUEUE_BESTELLUNG_EINGEHEND)
