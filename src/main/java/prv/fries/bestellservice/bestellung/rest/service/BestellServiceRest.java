@@ -13,6 +13,7 @@ import prv.fries.bestellservice.bestellung.service.BestellService;
 import prv.fries.bestellservice.bestellung.service.PaymentService;
 import prv.fries.bestellservice.bestellung.service.ProduktService;
 import prv.fries.bestellservice.bestellung.service.VersandService;
+import prv.fries.bestellservice.generated.BestellPositionDto;
 import prv.fries.bestellservice.generated.BestellungDto;
 import prv.fries.bestellservice.generated.StatusDto;
 import prv.fries.bestellservice.generated.client.versand.VersandauftragDto;
@@ -26,8 +27,8 @@ import java.util.UUID;
 @Slf4j
 public class BestellServiceRest implements BestellService {
 
-    private final BestellungRepository bestellungRepository;
 
+    private final BestellungRepository bestellungRepository;
 
     private final BestellungMapper bestellungMapper;
 
@@ -36,6 +37,8 @@ public class BestellServiceRest implements BestellService {
     private final PaymentService paymentServiceRest;
 
     private final VersandService versandService;
+
+    private static final String BESTELLUNG_NICHT_GEFUNDEN = "Bestellung nicht gefunden";
 
     @Override
     public Bestellung erstelleBestellung(BestellungDto bestellungDto) {
@@ -52,9 +55,8 @@ public class BestellServiceRest implements BestellService {
         log.info("Bestellung angelegt");
         bestellungDto.setId(bestellung.getId());
         try {
-            produktService.pruefeVerfuerbarkeit(bestellungDto);
-            updatePruefung(bestellung);
-            createZahlung(bestellung);
+            ueberpruefeProdukteVerfuegbar(bestellungDto);
+            erstelleZahlung(bestellung);
             erstelleVersandauftrag(bestellung);
         }catch (IllegalStateException e) {
             log.error("Fehler beim Ausführen der Bestellung {}", e.getMessage());
@@ -62,22 +64,22 @@ public class BestellServiceRest implements BestellService {
             bestellung.setStatus(Status.STORNIERT);
             bestellungRepository.save(bestellung);
         }
-        return bestellungRepository.findById(bestellung.getId()).orElseThrow(() -> new IllegalStateException("Bestellung nicht gefunden"));
+        return bestellungRepository.findById(bestellung.getId()).orElseThrow(() -> new IllegalStateException(BESTELLUNG_NICHT_GEFUNDEN));
     }
 
-    private void updatePruefung(Bestellung bestellung) {
-        try {
-            bestellung.setStatus(Status.GEPRUEFT);
-            bestellung.setLastUpdateAm(OffsetDateTime.now());
-            bestellungRepository.save(bestellung);
-        }catch(IllegalStateTransitionException e){
-            log.error("{} für Bestellung {}", e.getMessage(), bestellung.getId() );
-        }
+    private void ueberpruefeProdukteVerfuegbar(BestellungDto bestellungDto) {
+        var ueberpruefteProdukte = produktService.pruefeVerfuerbarkeit(bestellungDto);
+        updatePruefungAbgeschlossen(ueberpruefteProdukte);
     }
 
-    public void createZahlung(Bestellung bestellung) {
+    public void erstelleZahlung(Bestellung bestellung) {
         var response = paymentServiceRest.erstelleZahlung(bestellung);
         updateZahlungsStatus(response);
+    }
+
+    private void erstelleVersandauftrag(Bestellung bestellung) {
+        var response = versandService.erstelleVersandauftragRequest(bestellung);
+        updateVersandStatus(response);
     }
 
     @Override
@@ -91,11 +93,6 @@ public class BestellServiceRest implements BestellService {
         } else {
             throw new IllegalStateException("Zahlung nicht erfolgreich");
         }
-    }
-
-    private void erstelleVersandauftrag(Bestellung bestellung) {
-        var response = versandService.erstelleVersandauftragRequest(bestellung);
-        updateVersandStatus(response);
     }
 
     @Override
@@ -118,7 +115,22 @@ public class BestellServiceRest implements BestellService {
 
     @Override
     public void updatePruefungAbgeschlossen(BestellungDto produktVerfuegbarAbgeschlossen) {
-        //unnecessary for produktservice
+        if (!produktVerfuegbarAbgeschlossen.getBestellPositionen().stream().allMatch(BestellPositionDto::getVerfuegbar)) {
+            Bestellung bestellung = bestellungRepository.findById(produktVerfuegbarAbgeschlossen.getId()).orElseThrow(() -> new IllegalStateException(BESTELLUNG_NICHT_GEFUNDEN));
+            bestellung.setStatus(Status.STORNIERT);
+            bestellung.setLastUpdateAm(OffsetDateTime.now());
+            bestellungRepository.save(bestellung);
+            throw new IllegalStateException("Produkte nicht verfuegbar");
+        }
+        log.info("Pruefung abgeschlossen fuer Bestellung {}", produktVerfuegbarAbgeschlossen.getId());
+        Bestellung bestellung = bestellungRepository.findById(produktVerfuegbarAbgeschlossen.getId()).orElseThrow(() -> new IllegalStateException(BESTELLUNG_NICHT_GEFUNDEN));
+        try {
+            bestellung.setStatus(Status.GEPRUEFT);
+            bestellung.setLastUpdateAm(OffsetDateTime.now());
+            bestellungRepository.save(bestellung);
+        }catch(IllegalStateTransitionException e){
+            log.error("{} für Bestellung {}", e.getMessage(), bestellung.getId() );
+        }
     }
 
 
@@ -131,11 +143,11 @@ public class BestellServiceRest implements BestellService {
     }
 
     public Bestellung getBestellungById(UUID bestellId) {
-        return bestellungRepository.findById(bestellId).orElseThrow(() -> new RuntimeException("not found"));
+        return bestellungRepository.findById(bestellId).orElseThrow(() -> new IllegalStateException(BESTELLUNG_NICHT_GEFUNDEN));
     }
 
     public Bestellung updateBestellung(UUID bestellId, Status statusUpdate) {
-        Bestellung bestellung = bestellungRepository.findById(bestellId).orElseThrow(() -> new RuntimeException("not found"));
+        Bestellung bestellung = bestellungRepository.findById(bestellId).orElseThrow(() -> new IllegalStateException(BESTELLUNG_NICHT_GEFUNDEN));
         bestellung.setStatus(statusUpdate);
         return bestellungRepository.save(bestellung);
     }

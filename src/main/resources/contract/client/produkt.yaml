@@ -68,14 +68,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ProduktVerfuegbarkeitDto'
+              $ref: '#/components/schemas/BestellungDto'
       responses:
         '200':
           description: Verfügbarkeitsstatus
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProduktVerfuegbarDto'
+                $ref: '#/components/schemas/BestellungDto'
         '404':
           description: Produkt nicht gefunden
 
@@ -178,3 +178,13 @@ components:
           type: boolean
           description: Zeigt Verfuegbarkeit für Produkt an
           example: true
+    BestellungDto:
+      $ref: '../common-schemas.yaml#/components/schemas/BestellungDto'
+    BestellPositionDto:
+      $ref: '../common-schemas.yaml#/components/schemas/BestellPositionDto'
+    StatusDto:
+      $ref: '../common-schemas.yaml#/components/schemas/StatusDto'
+    StatusUpdateDto:
+      $ref: '../common-schemas.yaml#/components/schemas/StatusUpdateDto'
+    ErrorDto:
+      $ref: '../common-schemas.yaml#/components/schemas/ErrorDto'

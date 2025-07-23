@@ -11,9 +11,8 @@ public interface BestellService {
     void updateZahlungsStatus(BestellungDto zahlungErhalten);
 
     void updateVersandStatus(VersandauftragDto versandauftragAbgeschlossen);
+
     void updateVersandStatus1(BestellungDto versandauftragAbgeschlossen);
-
-
 
     void updatePruefungAbgeschlossen(BestellungDto bestellungUeberprueft);
 }

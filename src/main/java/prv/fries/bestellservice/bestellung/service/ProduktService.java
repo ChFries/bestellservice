@@ -4,5 +4,5 @@ import prv.fries.bestellservice.generated.BestellungDto;
 
 public interface ProduktService {
 
-    void pruefeVerfuerbarkeit(BestellungDto bestellungDto);
+    BestellungDto pruefeVerfuerbarkeit(BestellungDto bestellungDto);
 }

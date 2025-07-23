@@ -13,7 +13,8 @@ public class ProduktServiceRabbit implements ProduktService {
     private final BestellungPublisher bestellungPublisher;
 
     @Override
-    public void pruefeVerfuerbarkeit(BestellungDto bestellungDto) {
+    public BestellungDto pruefeVerfuerbarkeit(BestellungDto bestellungDto) {
         bestellungPublisher.publishBestellungAngelegt(bestellungDto);
+        return null;
     }
 }
