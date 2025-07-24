@@ -46,10 +46,10 @@ public class BestellServiceRabbit implements BestellService {
     public void updateZahlungsStatus(BestellungDto zahlungErhalten) {
         if (zahlungErhalten.getStatus() == StatusDto.BEZAHLT) {
             Bestellung bestellung = bestellungRepository.findById(zahlungErhalten.getId()).orElseThrow(() -> new IllegalStateException("BestellId nicht im ZahlungDto gefunden aber sollte da sein"));
-            log.info("Rechnung {} beglichen", zahlungErhalten.getId());
             bestellung.setStatus(Status.BEZAHLT);
             bestellung.setLastUpdateAm(OffsetDateTime.now());
             bestellungRepository.save(bestellung);
+            log.info("[RABBITMQ] Rechnung {} beglichen", zahlungErhalten.getId());
         } else {
             throw new IllegalStateException("Zahlung nicht erfolgreich");
         }

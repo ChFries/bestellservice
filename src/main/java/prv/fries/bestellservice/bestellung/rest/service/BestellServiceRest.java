@@ -55,7 +55,7 @@ public class BestellServiceRest implements BestellService {
             ueberpruefeProdukteVerfuegbar(bestellungDto);
             erstelleZahlung(bestellung);
             erstelleVersandauftrag(bestellung);
-        }catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             log.error("Fehler beim Ausführen der Bestellung {}", e.getMessage());
             bestellung.setLastUpdateAm(OffsetDateTime.now());
             bestellung.setStatus(Status.STORNIERT);
@@ -83,24 +83,24 @@ public class BestellServiceRest implements BestellService {
     public void updateZahlungsStatus(BestellungDto bezahlteBestellung) {
         if (bezahlteBestellung.getStatus() == StatusDto.BEZAHLT) {
             Bestellung bestellung = bestellungRepository.findById(bezahlteBestellung.getId()).orElseThrow(() -> new IllegalStateException("BestellId nicht im ZahlungDto gefunden aber sollte da sein"));
-            log.info("Betrag {} wurde für Rechnung {} beglichen", bestellung.getGesamtbetrag(), bestellung.getId());
             bestellung.setStatus(Status.BEZAHLT);
             bestellung.setLastUpdateAm(OffsetDateTime.now());
             bestellungRepository.save(bestellung);
+            log.info("[REST] Betrag {} wurde für Rechnung {} beglichen", bestellung.getGesamtbetrag(), bestellung.getId());
         } else {
             throw new IllegalStateException("Zahlung nicht erfolgreich");
         }
     }
 
     @Override
-    public void updateVersandStatus(BestellungDto versendeteBestellung){
+    public void updateVersandStatus(BestellungDto versendeteBestellung) {
         if (versendeteBestellung.getStatus() == StatusDto.VERSENDET) {
             Bestellung bestellung = bestellungRepository.findById(versendeteBestellung.getId()).orElseThrow(() -> new IllegalStateException("BestellId nicht im VersandAuftragDto gefunden aber sollte da sein"));
             bestellung.setStatus(Status.VERSENDET);
             bestellung.setLastUpdateAm(OffsetDateTime.now());
             log.info("Sendung mit Id {} wurde für Bestellung {} versendet", versendeteBestellung.getId(), versendeteBestellung.getId());
             bestellungRepository.save(bestellung);
-        }else {
+        } else {
             throw new IllegalStateException("Versandauftrag nicht erfolgreich");
         }
     }
@@ -120,8 +120,8 @@ public class BestellServiceRest implements BestellService {
             bestellung.setStatus(Status.GEPRUEFT);
             bestellung.setLastUpdateAm(OffsetDateTime.now());
             bestellungRepository.save(bestellung);
-        }catch(IllegalStateTransitionException e){
-            log.error("{} für Bestellung {}", e.getMessage(), bestellung.getId() );
+        } catch (IllegalStateTransitionException e) {
+            log.error("{} für Bestellung {}", e.getMessage(), bestellung.getId());
         }
     }
 
@@ -149,7 +149,7 @@ public class BestellServiceRest implements BestellService {
                 .stream()
                 .map(position -> position.getEinzelpreis() * position.getMenge())
                 .reduce(0.0, Double::sum);
-        gesamtbetrag = Double.valueOf(String.format("%.2f",gesamtbetrag));
+        gesamtbetrag = Double.valueOf(String.format("%.2f", gesamtbetrag));
         log.info("Gesamtbetrag für neue Bestellung ist {}", gesamtbetrag);
         return gesamtbetrag;
     }
