@@ -15,47 +15,6 @@ tags:
     description: Produktverwaltung und Verfügbarkeitsprüfung
 
 paths:
-  /produkt/{id}:
-    get:
-      tags:
-        - produkt
-      summary: Produktdetails abrufen
-      description: Gibt die Details eines Produkts anhand der ID zurück
-      operationId: getProduktById
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: Produkt-ID
-      responses:
-        '200':
-          description: Produkt erfolgreich abgerufen
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProduktDto'
-        '404':
-          description: Produkt nicht gefunden
-
-  /produkt:
-    get:
-      tags:
-        - produkt
-      summary: Alle Produkte abrufen
-      operationId: getAlleProdukte
-      responses:
-        '200':
-          description: Liste aller Produkte
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProduktDto'
-
   /produkt/verfuegbar:
     post:
       tags:
